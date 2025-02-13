@@ -11,8 +11,8 @@ export default function ValentineApp() {
   const [hearts, setHearts] = useState([]);
   const [cuteEmojis, setCuteEmojis] = useState([]);
 
-  // const targetDate = new Date(Date.UTC(2025, 1, 14, 0, 0, 0)).getTime();
-  const targetDate = Date.now() + 5 * 1000; // 1 menit dari sekarang
+  const targetDate = new Date(Date.UTC(2025, 1, 14, 0, 0, 0)).getTime();
+  // const targetDate = Date.now() + 5 * 1000; // 1 menit dari sekarang
   const [currentTime, setCurrentTime] = useState(Date.now());
   const [timeLeft, setTimeLeft] = useState(targetDate - currentTime);
   const [bgColor, setBgColor] = useState("bg-pink-200");
