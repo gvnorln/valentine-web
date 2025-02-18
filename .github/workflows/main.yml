@@ -52,7 +52,7 @@ jobs:
             docker login -u "${{ secrets.DOCKER_USERNAME }}" -p "${{ secrets.DOCKER_TOKEN }}"
 
             # Tarik Docker image terbaru
-            docker pull neverez/valentine-web:latest
+            docker pull neverez/valentine-web:1.0.0
 
             # Stop dan hapus container yang lama jika ada
             docker stop valentine-web || true
