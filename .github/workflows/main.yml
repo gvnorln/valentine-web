@@ -1,0 +1,71 @@
+name: CI/CD for Valentine Web
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the code
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      # Set up Node.js
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: "20"
+
+      # Install dependencies and build
+      - name: Install Dependencies
+        run: |
+          npm install
+          npm run build
+
+      - name: Run Tests
+        run: npm test
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      # Checkout code again
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      # Set up SSH agent with private key from GitHub secrets
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.7.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      # Debugging SSH connection to EC2
+      - name: Test SSH Connection
+        run: |
+          ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.SERVER_IP }} "echo 'Connection successful'"
+
+      # Deploy to EC2 instance
+      - name: Deploy to EC2
+        run: |
+          ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.SERVER_IP }} << 'EOF'
+            echo "Starting deployment..."
+
+            # Login to Docker Hub
+            docker login -u "${{ secrets.DOCKER_USERNAME }}" -p "${{ secrets.DOCKER_TOKEN }}"
+
+            # Pull latest image from Docker Hub
+            docker pull neverez/valentine-web:latest
+
+            # Stop and remove any old containers
+            docker stop valentine-web || true
+            docker rm valentine-web || true
+
+            # Run new Docker container
+            docker run -d --name valentine-web -p 80:3000 neverez/valentine-web:latest
+
+            echo "Deployment complete!"
+          EOF
