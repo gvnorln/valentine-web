@@ -39,3 +39,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+#ssh
+github-actions-key
+github-actions-key.pub
+valentine-web-server-key.pem
